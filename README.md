@@ -48,8 +48,9 @@ L’application met en œuvre plusieurs langages du Web (SQL, PHP, JavaScript, R
 
 ```mermaid
 erDiagram
-    ETUDIANT {
+   ETUDIANT {
         int id_etudiant
+        string ine
         string nom
         string prenom
         string email
@@ -103,7 +104,7 @@ ex:Livre1 a ex:Livre ;
 ## 📦 Installation
 1. Cloner le projet :
    ```bash
-   git clone https://github.com/<ton-nom-utilisateur>/projet-bibliotheque.git
+   git clone https://github.com/simohamedK/Biblioth-que-tudiante-Connect-e.git
    ```
 2. Importer la base MySQL avec le fichier `database.sql`
 3. Configurer la connexion dans `config.php`
