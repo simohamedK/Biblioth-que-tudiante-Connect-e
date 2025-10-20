@@ -168,11 +168,5 @@ wd:Q37158 a schema:Person ;
 ##  Licence & Auteur
 
 - **Auteur** : Kamli Mohamed — M2 THYP, Université Paris 8 — 2025  
-- **Licence** : MIT
 
 ---
-
-##  Auteur
-Projet réalisé par **Kamli Mohamed**  
-Étudiant en M2 THYP – Paris 8  
-2025  
