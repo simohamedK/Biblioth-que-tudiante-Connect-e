@@ -1,4 +1,4 @@
-@prefix bv:   <http://example.org/bv/> .
+@prefix bv:   <https://simohamedK.github.io/bv#> .
 @prefix owl:  <http://www.w3.org/2002/07/owl#> .
 @prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
@@ -11,7 +11,7 @@ bv: a owl:Ontology ;
   dcterms:description "Vocabulaire pour décrire des livres, auteurs, thèmes et requêtes vocales/narration dans le projet Bibliothèque Vocale."@fr ;
   dcterms:license <https://opensource.org/licenses/MIT> ;
   dcterms:created "2025-10-20"^^xsd:date ;
-  rdfs:isDefinedBy <http://example.org/bv/> .
+  rdfs:isDefinedBy <https://simohamedK.github.io/bv#> .
 
 ### CLASSES
 
