@@ -1,121 +1,178 @@
-# 📚 Gestion d’une bibliothèque d’étudiants
+# 📚 Bibliothèque Vocale Intelligente — Recherche par Voix & Narration
 
-## 🎯 Description du projet
-
-Ce projet a pour objectif de développer une application web permettant la **gestion d’une bibliothèque universitaire**.  
-Elle facilite le **suivi des prêts de livres** par les étudiants et permet de **relier les auteurs à leurs identifiants Wikidata** grâce au format **RDF/Turtle**.  
-
-L’application met en œuvre plusieurs langages du Web (SQL, PHP, JavaScript, RDF, Markdown) et propose une interface simple pour :
-- enregistrer les étudiants, les livres et les emprunts,  
-- visualiser les relations entre les entités via un diagramme,  
-- exploiter les données en lien avec des ressources du web sémantique (Wikidata).  
+> Un site web qui permet la **recherche de livres par commande vocale** et la **narration audio des résumés**, avec liens sémantiques vers **Wikidata** .
 
 ---
 
-## 👥 Public cible
-- Étudiants  
-- Chercheurs  
-- Communauté universitaire  
+##  Description
+
+Cette application web propose une interface moderne et accessible pour :
+- **Rechercher des livres à la voix** (Web Speech API) et au clavier.
+- **Écouter la narration** (Text‑to‑Speech) du titre et du résumé.
+- **Relier les auteurs à Wikidata** via des **URI** en **RDF/Turtle**.
+- **Consulter/filtrer** par auteur, thème, année.
+- **Exporter** les métadonnées de la bibliothèque au format **RDF/Turtle**.
 
 ---
 
-## ⚙️ Technologies utilisées
+##  Public cible
 
-### **Front-End**
-- HTML5  
-- CSS3  
-- JavaScript  
-- D3.js *(visualisation de données)*  
-
-### **Back-End**
-- PHP  
-
-### **Base de données**
-- MySQL  
-
-### **Données & Web sémantique**
-- RDF / Turtle  
-- JSON  
-
-### **Outils & environnement**
-- Git / GitHub  
-- Markdown  
-- Mermaid (diagramme)  
+- Étudiants, enseignants, chercheurs  
+- Bibliothécaires  
+- Personnes malvoyantes (accessibilité audio)
 
 ---
 
-## 📊 Diagramme entité-relation (Mermaid)
+##  Technologies utilisées
+
+- **Front‑End** : HTML5, CSS3, **JavaScript** (Web Speech API)
+- **Back‑End** : **PHP** (API + pages)
+- **Base de données** : **MySQL (SQL)**
+- **Données & Web sémantique** : **RDF / Turtle**, JSON
+- **Documentation** : **Markdown** (ce README)
+
+---
+
+##  Fonctionnalités
+
+-  **Recherche vocale** (bouton « Parler ») → transcription → recherche SQL
+-  **Narration audio** du titre/résumé (Text‑to‑Speech)
+-  **Recherche classique** (champ texte) + filtres (auteur, thème, année)
+-  **Liens sémantiques** : auteurs liés à Wikidata via URI
+-  **Export RDF/Turtle** des livres/auteurs
+-  **Journalisation** des requêtes vocales (terme, confiance, date)
+
+---
+
+##  Diagramme entité‑relation (Mermaid)
 
 ```mermaid
 erDiagram
-   ETUDIANT {
-        int id_etudiant
-        string ine
-        string nom
-        string prenom
-        string email
-    }
-    LIVRE {
-        int id_livre
-        string titre
-        string auteur
-        string date_publication
-    }
-    EMPRUNT {
-        int id_emprunt
-        date date_debut
-        date date_retour
-    }
+  LIVRE {
+    int id_livre PK
+    string titre
+    string resume
+    string isbn
+    int annee
+    int id_auteur FK
+  }
+  AUTEUR {
+    int id_auteur PK
+    string nom
+    string wikidata_uri
+  }
+  THEME {
+    int id_theme PK
+    string libelle
+  }
+  LIVRE_THEME {
+    int id_livre FK
+    int id_theme FK
+  }
+  RECHERCHE {
+    int id_recherche PK
+    string terme
+    string source
+    float confiance
+    datetime date_recherche
+  }
 
-    ETUDIANT ||--o{ EMPRUNT : effectue
-    LIVRE ||--o{ EMPRUNT : concerne
-    LIVRE ||--|| AUTEUR : ecrit_par
-
-    AUTEUR {
-        int id_auteur
-        string nom
-        string wikidata_uri
-    }
+  AUTEUR ||--o{ LIVRE : ecrit
+  LIVRE ||--o{ LIVRE_THEME : classe
+  THEME ||--o{ LIVRE_THEME : regroupe
+  RECHERCHE }o--o{ LIVRE : trouve
 ```
 
 ---
 
-## 🧩 Fonctionnalités prévues
-- Gestion des étudiants et des livres (CRUD)  
-- Suivi des emprunts (ajout, retour)  
-- Liaison RDF avec Wikidata (auteurs)  
-- Visualisation des relations avec D3.js  
-- Documentation claire en Markdown  
+## 🗄️ Schéma SQL minimal
+
+```sql
+CREATE TABLE auteur (
+  id_auteur INT AUTO_INCREMENT PRIMARY KEY,
+  nom VARCHAR(255) NOT NULL,
+  wikidata_uri VARCHAR(255) NULL
+);
+
+CREATE TABLE livre (
+  id_livre INT AUTO_INCREMENT PRIMARY KEY,
+  titre VARCHAR(255) NOT NULL,
+  resume TEXT,
+  isbn VARCHAR(20),
+  annee INT,
+  id_auteur INT,
+  FOREIGN KEY (id_auteur) REFERENCES auteur(id_auteur)
+);
+
+CREATE TABLE theme (
+  id_theme INT AUTO_INCREMENT PRIMARY KEY,
+  libelle VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE livre_theme (
+  id_livre INT,
+  id_theme INT,
+  PRIMARY KEY (id_livre, id_theme),
+  FOREIGN KEY (id_livre) REFERENCES livre(id_livre),
+  FOREIGN KEY (id_theme) REFERENCES theme(id_theme)
+);
+
+CREATE TABLE recherche (
+  id_recherche INT AUTO_INCREMENT PRIMARY KEY,
+  terme VARCHAR(255) NOT NULL,
+  source ENUM('voix','texte') NOT NULL,
+  confiance DECIMAL(3,2) NULL,
+  date_recherche DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+```
 
 ---
 
-## 🧠 Exemple RDF / Turtle
+##  Exemple RDF / Turtle
+
 ```turtle
-@prefix ex: <http://example.org/library#> .
-@prefix wd: <https://www.wikidata.org/entity/> .
+@prefix ex:   <http://example.org/library#> .
+@prefix wd:   <https://www.wikidata.org/entity/> .
+@prefix dct:  <http://purl.org/dc/terms/> .
+@prefix schema: <http://schema.org/> .
 
-ex:Livre1 a ex:Livre ;
-    ex:titre "Apprendre le Python" ;
-    ex:auteur wd:Q28865 .
+ex:Livre_42 a schema:Book ;
+  dct:title "Apprendre le Machine Learning"@fr ;
+  schema:isbn "9781234567890" ;
+  schema:datePublished "2023" ;
+  dct:abstract "Un guide pratique pour débuter en ML avec Python."@fr ;
+  schema:author wd:Q37158 .
+
+wd:Q37158 a schema:Person ;
+  schema:name "Auteur Exemple"@fr .
 ```
 
 ---
 
-## 📦 Installation
-1. Cloner le projet :
+##  Installation
+
+1. **Cloner** le dépôt :
    ```bash
-   git clone https://github.com/simohamedK/Biblioth-que-tudiante-Connect-e.git
+   git clone https://github.com/simohamedK/Bibliotheque-etudiante-Connecte.git
    ```
-2. Importer la base MySQL avec le fichier `database.sql`
-3. Configurer la connexion dans `config.php`
-4. Lancer un serveur local :
+2. **Créer la base MySQL** et importer `database.sql`.
+3. **Configurer la connexion** dans `config.php`.
+4. **Lancer un serveur local PHP** :
    ```bash
    php -S localhost:8000
    ```
+5. **Ouvrir** `http://localhost:8000` dans le navigateur.
 
 ---
 
-## ✨ Auteur
+##  Licence & Auteur
+
+- **Auteur** : Kamli Mohamed — M2 THYP, Université Paris 8 — 2025  
+- **Licence** : MIT
+
+---
+
+##  Auteur
 Projet réalisé par **Kamli Mohamed**  
 Étudiant en M2 THYP – Paris 8  
 2025  
