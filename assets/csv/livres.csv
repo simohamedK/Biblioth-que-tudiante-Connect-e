@@ -1,3 +1,2 @@
-dcterms:title,lib:titre,lib:auteur (resource),lib:datePublication
-Livre 1,Machine Learning,Auteur 1,2020-01-01
-Livre 2,Algorithmes,Auteur 2,2019-05-15
+resource_template,dcterms:title,dcterms:description,bv:isbn,bv:publishedYear,bv:hasAuthor,bv:hasTheme
+Livre,"Fondation","Cycle SF…","9782070415731","1951","Isaac Asimov","Science-fiction"
